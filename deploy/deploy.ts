@@ -25,9 +25,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const openTokenTicker = "OPEN";
   const maxSupply = Ether(1_000_000_000);
 
-  const validatorPassName = "Genisis Validator Pass";
+  const validatorPassName = "Genesis Validator Pass";
   const validatorPassTicker = "GVP";
-  const validatorPassUri = "https://avatars.githubusercontent.com/u/45976616";
+  const validatorPassUri = "ipfs://QmZTHvhCWQ66hdHZ9CjKMWp71Bi7yMcFJsibKfBhG6Z4xa";
 
   const fundraiserExchangeRates = [BigInt(30_000), BigInt(27_500), BigInt(25_000)];
   const fundraisingStart = ToBlockchainDate(new Date(2023, 11 - 1, 28)); // 28/11/2023
@@ -41,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const verifiedContributorName = "Verified Contributor";
   const verifiedContributorTicker = "VeCo";
-  const verifiedContributorUri = "https://avatars.githubusercontent.com/u/45976616";
+  const verifiedContributorUri = "ipfs://QmZTHvhCWQ66hdHZ9CjKMWp71Bi7yMcFJsibKfBhG6Z4xa";
 
   const verifiedContributorStakingTokensPerSecond = Gwei(3858024); // ~10_000 OPEN every 30 days (9999.998208)
 
@@ -80,7 +80,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ],
   });
 
-  const OpenStaking = await deployments.deploy("OpenStaking", {
+  const OpenWithdrawing = await deployments.deploy("OpenWithdrawing", {
     ...defaultParams(),
     args: [OPEN.address, openmeshWithdrawSignerAddress],
   });

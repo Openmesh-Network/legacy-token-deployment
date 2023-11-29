@@ -11,7 +11,7 @@ async function main() {
   const OPEN = await ethers.getContractAt("OPEN", (await deployments.get("OPEN")).address);
   const ValidatorPass = await ethers.getContractAt("ValidatorPass", (await deployments.get("ValidatorPass")).address);
   const Fundraiser = await ethers.getContractAt("Fundraiser", (await deployments.get("Fundraiser")).address);
-  const OpenStaking = await ethers.getContractAt("OpenStaking", (await deployments.get("OpenStaking")).address);
+  const OpenWithdrawing = await ethers.getContractAt("OpenWithdrawing", (await deployments.get("OpenWithdrawing")).address);
   const VerifiedContributor = await ethers.getContractAt("VerifiedContributor", (await deployments.get("VerifiedContributor")).address);
   const VerifiedContributorStaking = await ethers.getContractAt("VerifiedContributorStaking", (await deployments.get("VerifiedContributorStaking")).address);
 
@@ -44,7 +44,7 @@ async function main() {
     {
       to: OPEN.address,
       value: "0",
-      data: OPEN.interface.encodeFunctionData("grantRole", [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINT")), OpenStaking.address]),
+      data: OPEN.interface.encodeFunctionData("grantRole", [ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINT")), OpenWithdrawing.address]),
     },
     // OPEN token minting rights are granted to the Verified Contributor Staking
     {

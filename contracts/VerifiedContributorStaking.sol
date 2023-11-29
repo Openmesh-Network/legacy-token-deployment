@@ -5,20 +5,14 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {IERC20MintBurnable} from "./IERC20MintBurnable.sol";
+import {IVerifiedContributorStaking} from "./IVerifiedContributorStaking.sol";
 
-contract VerifiedContributorStaking is Ownable {
+contract VerifiedContributorStaking is Ownable, IVerifiedContributorStaking {
     uint256 public immutable tokensPerSecond;
     IERC20MintBurnable public immutable rewardToken;
     IERC721 public immutable stakeNFT;
     uint64 internal stakingOver = type(uint64).max;
-
     mapping(uint256 => uint64) private lastClaim;
-
-    error NotYourNFT();
-    error NFTAlreadyStaked();
-    error NFTNotStaked();
-    error StakingEndMustBeInTheFuture();
-    error Overflow();
 
     constructor(
         IERC20MintBurnable _rewardToken,
@@ -31,8 +25,7 @@ contract VerifiedContributorStaking is Ownable {
         tokensPerSecond = _tokensPerSecond;
     }
 
-    /// Stakes your NFT.
-    /// @param _tokenId The id of the NFT to stake.
+    /// @inheritdoc IVerifiedContributorStaking
     function stake(uint256 _tokenId) external {
         if (stakeNFT.ownerOf(_tokenId) != msg.sender) {
             revert NotYourNFT();
@@ -42,10 +35,10 @@ contract VerifiedContributorStaking is Ownable {
         }
 
         lastClaim[_tokenId] = _toUint64(block.timestamp);
+        emit NFTStaked(_tokenId);
     }
 
-    /// Unstakes your NFT.
-    /// @param _tokenId The id of the NFT to unstake.
+    /// @inheritdoc IVerifiedContributorStaking
     function unstake(uint256 _tokenId) external {
         if (stakeNFT.ownerOf(_tokenId) != msg.sender) {
             revert NotYourNFT();
@@ -54,10 +47,10 @@ contract VerifiedContributorStaking is Ownable {
         _claim(_tokenId);
 
         lastClaim[_tokenId] = 0;
+        emit NFTUnstaked(_tokenId);
     }
 
-    /// Checks how much tokens are claimable.
-    /// @param _tokenId The id of the NFT to check claimable tokens.
+    /// @inheritdoc IVerifiedContributorStaking
     function claimable(
         uint256 _tokenId
     ) public view returns (uint256 claimableTokens) {
@@ -80,9 +73,7 @@ contract VerifiedContributorStaking is Ownable {
         return (currentSeconds - lastClaimSeconds) * tokensPerSecond;
     }
 
-    /// Claims all claimable tokens.
-    /// @param _tokenId The id of the NFT to claim tokens for.
-    /// @notice Can be called by any wallet, but tokens will be claimed to NFT owner.
+    /// @inheritdoc IVerifiedContributorStaking
     function claim(uint256 _tokenId) external {
         _claim(_tokenId);
 
@@ -113,6 +104,8 @@ contract VerifiedContributorStaking is Ownable {
     /// @param _tokenId The NFT to claim the tokens for.
     /// @dev Due to gas optimization this does not update lastClaim, IS SHOULD ALWAYS BE UPDATED.
     function _claim(uint256 _tokenId) internal {
-        rewardToken.mint(stakeNFT.ownerOf(_tokenId), claimable(_tokenId));
+        uint256 tokens = claimable(_tokenId);
+        rewardToken.mint(stakeNFT.ownerOf(_tokenId), tokens);
+        emit TokensClaimed(_tokenId, tokens);
     }
 }

@@ -3,7 +3,7 @@ export default {
   "chainId": "11155111",
   "contracts": {
     "Fundraiser": {
-      "address": "0x373E6a32B4279A2e263C879eCbCD0709Df4D72bA",
+      "address": "0x7b6176D71fC4C9da20E095611315B0178E895823",
       "abi": [
         {
           "inputs": [
@@ -247,7 +247,7 @@ export default {
       ]
     },
     "OPEN": {
-      "address": "0x9524c3dF8B40fbD55Eff4c6e48E4386B0Ec114F9",
+      "address": "0x463BF544e123c8F29af39a9B5D3d140bD4c35214",
       "abi": [
         {
           "inputs": [
@@ -1318,8 +1318,8 @@ export default {
         }
       ]
     },
-    "OpenStaking": {
-      "address": "0xbea82A4c2f0315fFc5a3A5434c4bCcee781cd862",
+    "OpenWithdrawing": {
+      "address": "0x734eBF68D9634086157c8E655f177Ad9C99DAD7B",
       "abi": [
         {
           "inputs": [
@@ -1448,25 +1448,6 @@ export default {
               "type": "uint256"
             }
           ],
-          "name": "TokensStaked",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-            }
-          ],
           "name": "TokensWithdrawable",
           "type": "event"
         },
@@ -1574,19 +1555,6 @@ export default {
         {
           "inputs": [
             {
-              "internalType": "uint256",
-              "name": "_amount",
-              "type": "uint256"
-            }
-          ],
-          "name": "stake",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
               "internalType": "address",
               "name": "newOwner",
               "type": "address"
@@ -1633,7 +1601,7 @@ export default {
       ]
     },
     "ValidatorPass": {
-      "address": "0xCa05e4185a5E8d07dc7DA06F6359db63Fa090e33",
+      "address": "0xd1d6Ab63f9cb3ab904Ef0FCAB15bA71F0AC0e80E",
       "abi": [
         {
           "inputs": [
@@ -2360,7 +2328,7 @@ export default {
       ]
     },
     "VerifiedContributor": {
-      "address": "0xD6cB52d72c6F849b24b1228f1c16FE60F68E5177",
+      "address": "0xE8bF45b6c30d79eF0A54E6484fd45270E2ACcECd",
       "abi": [
         {
           "inputs": [
@@ -3182,7 +3150,7 @@ export default {
       ]
     },
     "VerifiedContributorStaking": {
-      "address": "0x8F0749708fA011343e366713966612236640c4B8",
+      "address": "0x8c80eC8918fe4A714c36D839f4C43B9048b76bC9",
       "abi": [
         {
           "inputs": [
@@ -3262,6 +3230,32 @@ export default {
           "inputs": [
             {
               "indexed": true,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "NFTStaked",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "NFTUnstaked",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
               "internalType": "address",
               "name": "previousOwner",
               "type": "address"
@@ -3274,6 +3268,25 @@ export default {
             }
           ],
           "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "tokens",
+              "type": "uint256"
+            }
+          ],
+          "name": "TokensClaimed",
           "type": "event"
         },
         {
