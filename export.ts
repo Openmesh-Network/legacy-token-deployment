@@ -1,9 +1,9 @@
 export default {
-  "name": "sepolia",
-  "chainId": "11155111",
+  "name": "mainnet",
+  "chainId": "1",
   "contracts": {
     "Fundraiser": {
-      "address": "0x7b6176D71fC4C9da20E095611315B0178E895823",
+      "address": "0x5F694B4533B6459867C3a45B88E299d7E96567c9",
       "abi": [
         {
           "inputs": [
@@ -247,7 +247,7 @@ export default {
       ]
     },
     "OPEN": {
-      "address": "0x463BF544e123c8F29af39a9B5D3d140bD4c35214",
+      "address": "0x2F38ff2e31b82d0940c551A300A5B1AFc9436b8c",
       "abi": [
         {
           "inputs": [
@@ -1319,7 +1319,7 @@ export default {
       ]
     },
     "OpenWithdrawing": {
-      "address": "0x734eBF68D9634086157c8E655f177Ad9C99DAD7B",
+      "address": "0xb9938d5Ff4E34717b0DcBe2B3a8C9E72D8CbF96C",
       "abi": [
         {
           "inputs": [
@@ -1601,7 +1601,7 @@ export default {
       ]
     },
     "ValidatorPass": {
-      "address": "0xd1d6Ab63f9cb3ab904Ef0FCAB15bA71F0AC0e80E",
+      "address": "0x7aBE49D226328b5F2aCF6c30155CA69AfCB9E707",
       "abi": [
         {
           "inputs": [
@@ -2324,11 +2324,24 @@ export default {
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_metadataUri",
+              "type": "string"
+            }
+          ],
+          "name": "updateMetadata",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
       ]
     },
     "VerifiedContributor": {
-      "address": "0xE8bF45b6c30d79eF0A54E6484fd45270E2ACcECd",
+      "address": "0x205664D646ddA314392dbbeDB06Af91B5a43647a",
       "abi": [
         {
           "inputs": [
@@ -3146,11 +3159,24 @@ export default {
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_metadataUri",
+              "type": "string"
+            }
+          ],
+          "name": "updateMetadata",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
       ]
     },
     "VerifiedContributorStaking": {
-      "address": "0x8c80eC8918fe4A714c36D839f4C43B9048b76bC9",
+      "address": "0xAA82B9Eb312f278C626AFC2BF21485313861c262",
       "abi": [
         {
           "inputs": [
@@ -3435,7 +3461,7 @@ export default {
       ]
     },
     "multisig": {
-      "address": "0x44DbB18208bBFd976c3351Db1Fa4C6871d503c0E",
+      "address": "0xd098Aff583b8fe1DE818Db1E40f68FD0B83e93d4",
       "abi": []
     }
   }

@@ -2,8 +2,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { Ether, Gwei, ether, gwei } from "../utils/ethersUnits";
 import { BigNumber } from "@ethersproject/bignumber";
-import { ToBlockchainDate } from "../utils/timeUnits";
+import { UTCBlockchainDate } from "../utils/timeUnits";
 import { ethers } from "hardhat";
+import axios from "axios";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getUnnamedAccounts, network } = hre;
@@ -16,10 +17,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   }
 
   const openmeshMultisig = (await deployments.get("multisig")).address;
-  const openmeshWithdrawSignerAddress = "0xaF7E68bCb2Fc7295492A00177f14F59B92814e70";
-  const gasPrice = BigNumber.from(Gwei(25)); // For some reason hardhat-deploy still uses BigNumber
+  const openmeshWithdrawSignerAddress = "0x8B4a225774EDdAF9C33f6b961Db832228c770b21";
+  const gasPrice = BigNumber.from(Gwei(35)); // For some reason hardhat-deploy still uses BigNumber
   const priorityGas = BigNumber.from(gwei / BigInt(10));
-  let nonce = 0;
+  let nonce = 17;
 
   const openTokenName = "Openmesh";
   const openTokenTicker = "OPEN";
@@ -27,26 +28,42 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const validatorPassName = "Genesis Validator Pass";
   const validatorPassTicker = "GVP";
-  const validatorPassUri = "ipfs://QmZTHvhCWQ66hdHZ9CjKMWp71Bi7yMcFJsibKfBhG6Z4xa";
+  const validatorPassUri = "https://erc721.openmesh.network/metadata/gvp.json";
 
   const fundraiserExchangeRates = [BigInt(30_000), BigInt(27_500), BigInt(25_000)];
-  const fundraisingStart = ToBlockchainDate(new Date(2023, 11 - 1, 28)); // 28/11/2023
+  const fundraisingStart = UTCBlockchainDate(2023, 12, 5); // 5/12/2023
   const fundraisingPeriodEnds = [
-    ToBlockchainDate(new Date(2023, 12 - 1, 5)), // 5/12/2023
-    ToBlockchainDate(new Date(2023, 12 - 1, 12)), // 12/12/2023
-    ToBlockchainDate(new Date(2023, 12 - 1, 26)), // 26/12/2023
+    UTCBlockchainDate(2023, 12, 12), // 12/12/2023
+    UTCBlockchainDate(2023, 12, 19), // 19/12/2023
+    UTCBlockchainDate(2024, 1, 2), // 2/1/2024
   ];
   const fundraiserMinContribution = ether / BigInt(2);
   const fundraiserMaxContribution = Ether(2);
 
-  const verifiedContributorName = "Verified Contributor";
-  const verifiedContributorTicker = "VeCo";
-  const verifiedContributorUri = "ipfs://QmZTHvhCWQ66hdHZ9CjKMWp71Bi7yMcFJsibKfBhG6Z4xa";
+  const verifiedContributorName = "Openmesh Verified Contributor";
+  const verifiedContributorTicker = "OVC";
+  const verifiedContributorUri = "https://erc721.openmesh.network/metadata/ovc.json";
 
   const verifiedContributorStakingTokensPerSecond = Gwei(3858024); // ~10_000 OPEN every 30 days (9999.998208)
 
   const minNonce = await ethers.provider.getTransactionCount(deployer);
-  const defaultParams = () => {
+  const defaultParams = async () => {
+    while (true) {
+      // To prevent "ProviderError: err: max fee per gas less than block base fee"
+      const gasInfo = await axios.request({
+        url: "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" + process.env.X_ETHERSCAN_API_KEY ?? "",
+      });
+      if (!gasInfo?.data?.result?.suggestBaseFee) {
+        console.error("Got response", gasInfo);
+      }
+      if (gasInfo.data.result.suggestBaseFee < gasPrice.div(BigNumber.from(10).pow(9))) {
+        console.log("Lets go", gasInfo.data.result.suggestBaseFee);
+        break;
+      }
+      console.log("Waiting...", gasInfo.data.result.suggestBaseFee);
+      await new Promise((promise) => setTimeout(promise, 10_000));
+    }
+
     return {
       nonce: Math.max(nonce++, minNonce),
       maxFeePerGas: gasPrice,
@@ -57,17 +74,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   const OPEN = await deployments.deploy("OPEN", {
-    ...defaultParams(),
+    ...(await defaultParams()),
     args: [openTokenName, openTokenTicker, maxSupply, openmeshMultisig],
   });
 
   const ValidatorPass = await deployments.deploy("ValidatorPass", {
-    ...defaultParams(),
+    ...(await defaultParams()),
+    // maxPriorityFeePerGas: BigNumber.from(gwei / BigInt(2)), if replace transaction
     args: [validatorPassName, validatorPassTicker, validatorPassUri, openmeshMultisig],
   });
 
   const Fundraiser = await deployments.deploy("Fundraiser", {
-    ...defaultParams(),
+    ...(await defaultParams()),
     args: [
       fundraiserExchangeRates,
       OPEN.address,
@@ -81,17 +99,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   const OpenWithdrawing = await deployments.deploy("OpenWithdrawing", {
-    ...defaultParams(),
+    ...(await defaultParams()),
     args: [OPEN.address, openmeshWithdrawSignerAddress],
   });
 
   const VerifiedContributor = await deployments.deploy("VerifiedContributor", {
-    ...defaultParams(),
+    ...(await defaultParams()),
     args: [verifiedContributorName, verifiedContributorTicker, verifiedContributorUri, openmeshMultisig],
   });
 
   const VerifiedContributorStaking = await deployments.deploy("VerifiedContributorStaking", {
-    ...defaultParams(),
+    ...(await defaultParams()),
     args: [OPEN.address, VerifiedContributor.address, verifiedContributorStakingTokensPerSecond, openmeshMultisig],
   });
 };

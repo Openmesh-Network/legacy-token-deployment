@@ -43,11 +43,6 @@ contract ValidatorPass is ERC721, AccessControl, IERC721Mintable {
         _mint(account, mintCounter++);
     }
 
-    function tokenURI(uint256) public view override returns (string memory) {
-        // Single image
-        return metadataUri;
-    }
-
     function transferFrom(
         address from,
         address to,
@@ -59,5 +54,16 @@ contract ValidatorPass is ERC721, AccessControl, IERC721Mintable {
         }
 
         super.transferFrom(from, to, tokenId);
+    }
+
+    function tokenURI(uint256) public view override returns (string memory) {
+        // Single image
+        return metadataUri;
+    }
+
+    function updateMetadata(
+        string calldata _metadataUri
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        metadataUri = _metadataUri;
     }
 }

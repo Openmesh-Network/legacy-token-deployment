@@ -2,11 +2,12 @@ import { deployments, ethers } from "hardhat";
 import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
 import { MetaTransactionData } from "@safe-global/safe-core-sdk-types";
 import { Ether, Gwei, gwei } from "../utils/ethersUnits";
+import axios from "axios";
 
-async function main() {
+export async function main() {
   const [owner] = await ethers.getSigners();
   const safeAddress = (await deployments.get("multisig")).address;
-  const verifiedContributors = ["0xaF7E68bCb2Fc7295492A00177f14F59B92814e70", "0x44DbB18208bBFd976c3351Db1Fa4C6871d503c0E"]; // These addresses will be minted a Verified Contributor.
+  const verifiedContributors = ["0x519ce4C129a981B2CBB4C3990B1391dA24E8EbF3"]; // These addresses will be minted a Verified Contributor.
 
   const OPEN = await ethers.getContractAt("OPEN", (await deployments.get("OPEN")).address);
   const ValidatorPass = await ethers.getContractAt("ValidatorPass", (await deployments.get("ValidatorPass")).address);
@@ -69,8 +70,25 @@ async function main() {
   ];
   const safeTransaction = await safeSdk.createTransaction({ safeTransactionData: transactions });
 
+  const gasPrice = Gwei(35);
+  while (true) {
+    // To prevent "ProviderError: err: max fee per gas less than block base fee"
+    const gasInfo = await axios.request({
+      url: "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" + process.env.X_ETHERSCAN_API_KEY ?? "",
+    });
+    if (!gasInfo?.data?.result?.suggestBaseFee) {
+      console.error("Got response", gasInfo);
+    }
+    if (gasInfo.data.result.suggestBaseFee < gasPrice / BigInt(10) ** BigInt(9)) {
+      console.log("Lets go", gasInfo.data.result.suggestBaseFee);
+      break;
+    }
+    console.log("Waiting...", gasInfo.data.result.suggestBaseFee);
+    await new Promise((promise) => setTimeout(promise, 10_000));
+  }
+
   const executeTxResponse = await safeSdk.executeTransaction(safeTransaction, {
-    maxFeePerGas: Gwei(25).toString(),
+    maxFeePerGas: gasPrice.toString(),
     maxPriorityFeePerGas: (gwei / BigInt(10)).toString(),
   });
   await executeTxResponse.transactionResponse?.wait();

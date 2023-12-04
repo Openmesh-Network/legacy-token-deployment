@@ -16,7 +16,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1_000_000,
+            runs: 200,
           },
         },
       },
@@ -40,6 +40,11 @@ const config: HardhatUserConfig = {
           apiKey: process.env.X_ETHERSCAN_API_KEY ?? "",
         },
       },
+    },
+  },
+  etherscan: {
+    apiKey: {
+      mainnet: process.env.X_ETHERSCAN_API_KEY ?? "",
     },
   },
 };

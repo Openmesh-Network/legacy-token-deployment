@@ -3,11 +3,10 @@
 This repository has all the token contracts and a simple deployment script, to minimize user error.
 
 ```shell
-npx hardhat multisig 0x44DbB18208bBFd976c3351Db1Fa4C6871d503c0E --network sepolia
-SET NONCE TO DESIRED NONCE IN deploy.ts
-npx hardhat deploy --network sepolia
-npx hardhat etherscan-verify --network sepolia
-npx hardhat sourcify --network sepolia
-npx hardhat run ./scripts/grant-permision-safe.ts --network sepolia
-npx hardhat export --export export.ts --network sepolia
+npx hardhat multisig 0xd098Aff583b8fe1DE818Db1E40f68FD0B83e93d4 --network mainnet
+SET DESIRED NONCE TO IN deploy.ts && DESIRED ACCOUNT WITH PRIV_KEY IN .env
+npx hardhat deploy --network mainnet && npx hardhat run ./scripts/grant-permision-safe.ts --network mainnet
+npx hardhat etherscan-verify --network mainnet
+npx hardhat sourcify --network mainnet
+npx hardhat export --export export.ts --network mainnet
 ```

@@ -18,3 +18,7 @@ export function FromBlockchainDate(date: bigint): Date {
   jsDate.setTime(Number(date) * 1000);
   return jsDate;
 }
+
+export function UTCBlockchainDate(utcYear: number, utcMonth: number, utcDay: number): number {
+  return Math.round(Date.UTC(utcYear, utcMonth - 1, utcDay) / 1000);
+}

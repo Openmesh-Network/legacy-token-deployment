@@ -37,11 +37,6 @@ contract VerifiedContributor is ERC721Enumerable, AccessControl {
             AccessControl.supportsInterface(_interfaceId);
     }
 
-    function tokenURI(uint256) public view override returns (string memory) {
-        // Single image
-        return metadataUri;
-    }
-
     /// @notice Mints a token to an address.
     /// @param to The address receiving the token.
     /// @param tokenId The id of the token to be minted.
@@ -69,5 +64,16 @@ contract VerifiedContributor is ERC721Enumerable, AccessControl {
         }
 
         super.transferFrom(from, to, tokenId);
+    }
+
+    function tokenURI(uint256) public view override returns (string memory) {
+        // Single image
+        return metadataUri;
+    }
+
+    function updateMetadata(
+        string calldata _metadataUri
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        metadataUri = _metadataUri;
     }
 }
