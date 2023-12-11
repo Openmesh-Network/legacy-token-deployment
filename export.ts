@@ -1,9 +1,9 @@
 export default {
-  "name": "mainnet",
-  "chainId": "1",
+  "name": "sepolia",
+  "chainId": "11155111",
   "contracts": {
     "Fundraiser": {
-      "address": "0x5F694B4533B6459867C3a45B88E299d7E96567c9",
+      "address": "0x9f7120d8d28aef28ea5f2b5c31f3f18ebb7e6ee3",
       "abi": [
         {
           "inputs": [
@@ -46,6 +46,16 @@ export default {
               "internalType": "uint256",
               "name": "_maxWeiPerAccount",
               "type": "uint256"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_ensManager",
+              "type": "address"
             }
           ],
           "stateMutability": "nonpayable",
@@ -247,7 +257,7 @@ export default {
       ]
     },
     "OPEN": {
-      "address": "0x2F38ff2e31b82d0940c551A300A5B1AFc9436b8c",
+      "address": "0xBeD54CD7cD1211d18944c5302BC9B62321C2ec48",
       "abi": [
         {
           "inputs": [
@@ -269,6 +279,11 @@ export default {
             {
               "internalType": "address",
               "name": "_admin",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
               "type": "address"
             }
           ],
@@ -1319,7 +1334,7 @@ export default {
       ]
     },
     "OpenWithdrawing": {
-      "address": "0xb9938d5Ff4E34717b0DcBe2B3a8C9E72D8CbF96C",
+      "address": "0x412D9e11c30c5E96c4E19b3ff5e850412a56aB1F",
       "abi": [
         {
           "inputs": [
@@ -1330,7 +1345,17 @@ export default {
             },
             {
               "internalType": "address",
-              "name": "_admin",
+              "name": "_withdrawSigner",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_ensManager",
               "type": "address"
             }
           ],
@@ -1601,7 +1626,7 @@ export default {
       ]
     },
     "ValidatorPass": {
-      "address": "0x7aBE49D226328b5F2aCF6c30155CA69AfCB9E707",
+      "address": "0xa79cB3800136589d5481B16c363ddee547aF555a",
       "abi": [
         {
           "inputs": [
@@ -1623,6 +1648,11 @@ export default {
             {
               "internalType": "address",
               "name": "_admin",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
               "type": "address"
             }
           ],
@@ -2341,7 +2371,7 @@ export default {
       ]
     },
     "VerifiedContributor": {
-      "address": "0x205664D646ddA314392dbbeDB06Af91B5a43647a",
+      "address": "0xcEb4553503D4fd13E59E9505AF7BCF2D466ebEa7",
       "abi": [
         {
           "inputs": [
@@ -2363,6 +2393,11 @@ export default {
             {
               "internalType": "address",
               "name": "_admin",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
               "type": "address"
             }
           ],
@@ -3176,7 +3211,7 @@ export default {
       ]
     },
     "VerifiedContributorStaking": {
-      "address": "0xAA82B9Eb312f278C626AFC2BF21485313861c262",
+      "address": "0xD5074eE83d5B9107Ff920157712352E87F656Ae9",
       "abi": [
         {
           "inputs": [
@@ -3198,6 +3233,11 @@ export default {
             {
               "internalType": "address",
               "name": "_admin",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IReverseRegistrar",
+              "name": "_reverseRegistrar",
               "type": "address"
             }
           ],
@@ -3460,8 +3500,12 @@ export default {
         }
       ]
     },
+    "ens": {
+      "address": "0xA0a1AbcDAe1a2a4A2EF8e9113Ff0e02DD81DC0C6",
+      "abi": []
+    },
     "multisig": {
-      "address": "0xd098Aff583b8fe1DE818Db1E40f68FD0B83e93d4",
+      "address": "0x44DbB18208bBFd976c3351Db1Fa4C6871d503c0E",
       "abi": []
     }
   }

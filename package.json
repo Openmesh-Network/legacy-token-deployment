@@ -3,6 +3,7 @@
     "multisig": "npx hardhat run ./scripts/multisig.ts"
   },
   "dependencies": {
+    "@ensdomains/ens-contracts": "^0.0.22",
     "@openzeppelin/contracts": "^5.0.0",
     "@safe-global/protocol-kit": "^1.3.0",
     "@safe-global/safe-core-sdk-types": "^2.3.0",

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
 
 import {IERC20MintBurnable} from "./IERC20MintBurnable.sol";
 import {IVerifiedContributorStaking} from "./IVerifiedContributorStaking.sol";
@@ -18,11 +19,13 @@ contract VerifiedContributorStaking is Ownable, IVerifiedContributorStaking {
         IERC20MintBurnable _rewardToken,
         IERC721 _stakeNFT,
         uint256 _tokensPerSecond,
-        address _admin
+        address _admin,
+        IReverseRegistrar _reverseRegistrar
     ) Ownable(_admin) {
         rewardToken = _rewardToken;
         stakeNFT = _stakeNFT;
         tokensPerSecond = _tokensPerSecond;
+        _reverseRegistrar.claim(_admin);
     }
 
     /// @inheritdoc IVerifiedContributorStaking

@@ -10,6 +10,7 @@ import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IER
 import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {IERC5267} from "@openzeppelin/contracts/interfaces/IERC5267.sol";
 import {IERC6372} from "@openzeppelin/contracts/interfaces/IERC6372.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
 
 import {IERC20MintBurnable} from "./IERC20MintBurnable.sol";
 
@@ -23,10 +24,12 @@ contract OPEN is ERC20Votes, AccessControl, IERC20MintBurnable {
         string memory _name,
         string memory _symbol,
         uint256 _maxSupply,
-        address _admin
+        address _admin,
+        IReverseRegistrar _reverseRegistrar
     ) ERC20(_name, _symbol) EIP712(_name, "1") {
         maxSupply = _maxSupply;
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _reverseRegistrar.claim(_admin);
     }
 
     /// @inheritdoc AccessControl

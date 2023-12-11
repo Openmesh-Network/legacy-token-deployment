@@ -1,8 +1,9 @@
-import { deployments, ethers } from "hardhat";
+import { deployments, ethers, network } from "hardhat";
 import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
 import { MetaTransactionData } from "@safe-global/safe-core-sdk-types";
 import { Ether, Gwei, gwei } from "../utils/ethersUnits";
 import axios from "axios";
+import { waitForGasPrice } from "../utils/gasTracker";
 
 export async function main() {
   const [owner] = await ethers.getSigners();
@@ -70,22 +71,8 @@ export async function main() {
   ];
   const safeTransaction = await safeSdk.createTransaction({ safeTransactionData: transactions });
 
-  const gasPrice = Gwei(35);
-  while (true) {
-    // To prevent "ProviderError: err: max fee per gas less than block base fee"
-    const gasInfo = await axios.request({
-      url: "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" + process.env.X_ETHERSCAN_API_KEY ?? "",
-    });
-    if (!gasInfo?.data?.result?.suggestBaseFee) {
-      console.error("Got response", gasInfo);
-    }
-    if (gasInfo.data.result.suggestBaseFee < gasPrice / BigInt(10) ** BigInt(9)) {
-      console.log("Lets go", gasInfo.data.result.suggestBaseFee);
-      break;
-    }
-    console.log("Waiting...", gasInfo.data.result.suggestBaseFee);
-    await new Promise((promise) => setTimeout(promise, 10_000));
-  }
+  const gasPrice = Gwei(25);
+  await waitForGasPrice(gasPrice);
 
   const executeTxResponse = await safeSdk.executeTransaction(safeTransaction, {
     maxFeePerGas: gasPrice.toString(),

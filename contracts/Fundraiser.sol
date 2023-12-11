@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IERC20MintBurnable} from ".//IERC20MintBurnable.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
+
+import {IERC20MintBurnable} from "./IERC20MintBurnable.sol";
 import {IERC721Mintable} from "./IERC721Mintable.sol";
 
 contract Fundraiser {
@@ -30,7 +32,9 @@ contract Fundraiser {
         uint32 _start,
         uint32[] memory _end,
         uint256 _minWeiPerAccount,
-        uint256 _maxWeiPerAccount
+        uint256 _maxWeiPerAccount,
+        IReverseRegistrar _reverseRegistrar,
+        address _ensManager
     ) {
         tokensPerWei = _tokensPerWei;
         token = _token;
@@ -40,6 +44,7 @@ contract Fundraiser {
         end = _end;
         minWeiPerAccount = _minWeiPerAccount;
         maxWeiPerAccount = _maxWeiPerAccount;
+        _reverseRegistrar.claim(_ensManager);
     }
 
     fallback() external payable {

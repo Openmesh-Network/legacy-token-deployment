@@ -4,7 +4,7 @@ import { Ether, Gwei, ether, gwei } from "../utils/ethersUnits";
 import { BigNumber } from "@ethersproject/bignumber";
 import { UTCBlockchainDate } from "../utils/timeUnits";
 import { ethers } from "hardhat";
-import axios from "axios";
+import { waitForGasPrice } from "../utils/gasTracker";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getUnnamedAccounts, network } = hre;
@@ -14,13 +14,25 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   if (!network.live) {
     // On the hardhat network
     await deployments.save("multisig", { address: deployer, abi: [] });
+    await deployments.deploy("ens", {
+      from: deployer,
+      contract: "MockReverseRegistrar",
+    });
   }
 
   const openmeshMultisig = (await deployments.get("multisig")).address;
+  const ensReverseRegistrar = (await deployments.get("ens")).address;
   const openmeshWithdrawSignerAddress = "0x8B4a225774EDdAF9C33f6b961Db832228c770b21";
-  const gasPrice = BigNumber.from(Gwei(35)); // For some reason hardhat-deploy still uses BigNumber
-  const priorityGas = BigNumber.from(gwei / BigInt(10));
-  let nonce = 17;
+  const gasPrice = Gwei(25);
+  const priorityGas = gwei / BigInt(10);
+  let nonce = 0;
+  try {
+    const deploymentNonce = await deployments.readDotFile(".deploymentNonce");
+    nonce = parseInt(deploymentNonce);
+  } catch {
+    nonce = await ethers.provider.getTransactionCount(deployer);
+    await deployments.saveDotFile(".deploymentNonce", nonce.toString());
+  }
 
   const openTokenName = "Openmesh";
   const openTokenTicker = "OPEN";
@@ -48,26 +60,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const minNonce = await ethers.provider.getTransactionCount(deployer);
   const defaultParams = async () => {
-    while (true) {
-      // To prevent "ProviderError: err: max fee per gas less than block base fee"
-      const gasInfo = await axios.request({
-        url: "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" + process.env.X_ETHERSCAN_API_KEY ?? "",
-      });
-      if (!gasInfo?.data?.result?.suggestBaseFee) {
-        console.error("Got response", gasInfo);
-      }
-      if (gasInfo.data.result.suggestBaseFee < gasPrice.div(BigNumber.from(10).pow(9))) {
-        console.log("Lets go", gasInfo.data.result.suggestBaseFee);
-        break;
-      }
-      console.log("Waiting...", gasInfo.data.result.suggestBaseFee);
-      await new Promise((promise) => setTimeout(promise, 10_000));
-    }
+    await waitForGasPrice(gasPrice);
 
     return {
       nonce: Math.max(nonce++, minNonce),
-      maxFeePerGas: gasPrice,
-      maxPriorityFeePerGas: priorityGas,
+      maxFeePerGas: BigNumber.from(gasPrice),
+      maxPriorityFeePerGas: BigNumber.from(priorityGas),
       from: deployer,
       skipIfAlreadyDeployed: true,
     } as const;
@@ -75,13 +73,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const OPEN = await deployments.deploy("OPEN", {
     ...(await defaultParams()),
-    args: [openTokenName, openTokenTicker, maxSupply, openmeshMultisig],
+    args: [openTokenName, openTokenTicker, maxSupply, openmeshMultisig, ensReverseRegistrar],
   });
 
   const ValidatorPass = await deployments.deploy("ValidatorPass", {
     ...(await defaultParams()),
     // maxPriorityFeePerGas: BigNumber.from(gwei / BigInt(2)), if replace transaction
-    args: [validatorPassName, validatorPassTicker, validatorPassUri, openmeshMultisig],
+    args: [validatorPassName, validatorPassTicker, validatorPassUri, openmeshMultisig, ensReverseRegistrar],
   });
 
   const Fundraiser = await deployments.deploy("Fundraiser", {
@@ -95,22 +93,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       fundraisingPeriodEnds,
       fundraiserMinContribution,
       fundraiserMaxContribution,
+      ensReverseRegistrar,
+      openmeshMultisig,
     ],
   });
 
   const OpenWithdrawing = await deployments.deploy("OpenWithdrawing", {
     ...(await defaultParams()),
-    args: [OPEN.address, openmeshWithdrawSignerAddress],
+    args: [OPEN.address, openmeshWithdrawSignerAddress, ensReverseRegistrar, openmeshMultisig],
   });
 
   const VerifiedContributor = await deployments.deploy("VerifiedContributor", {
     ...(await defaultParams()),
-    args: [verifiedContributorName, verifiedContributorTicker, verifiedContributorUri, openmeshMultisig],
+    args: [verifiedContributorName, verifiedContributorTicker, verifiedContributorUri, openmeshMultisig, ensReverseRegistrar],
   });
 
   const VerifiedContributorStaking = await deployments.deploy("VerifiedContributorStaking", {
     ...(await defaultParams()),
-    args: [OPEN.address, VerifiedContributor.address, verifiedContributorStakingTokensPerSecond, openmeshMultisig],
+    args: [OPEN.address, VerifiedContributor.address, verifiedContributorStakingTokensPerSecond, openmeshMultisig, ensReverseRegistrar],
   });
 };
 export default func;

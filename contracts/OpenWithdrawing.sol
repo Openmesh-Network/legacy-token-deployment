@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
 
 import {IERC20MintBurnable} from "./IERC20MintBurnable.sol";
 import {IOpenWithdrawing} from "./IOpenWithdrawing.sol";
@@ -17,9 +18,12 @@ contract OpenWithdrawing is Ownable, EIP712, IOpenWithdrawing {
 
     constructor(
         IERC20MintBurnable _token,
-        address _admin
-    ) Ownable(_admin) EIP712("OpenStaking", "1") {
+        address _withdrawSigner,
+        IReverseRegistrar _reverseRegistrar,
+        address _ensManager
+    ) Ownable(_withdrawSigner) EIP712("OpenStaking", "1") {
         token = _token;
+        _reverseRegistrar.claim(_ensManager);
     }
 
     /// @inheritdoc IOpenWithdrawing

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {ERC721, IERC721, IERC165} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
 
 import {IERC721Mintable} from "./IERC721Mintable.sol";
 
@@ -17,10 +18,12 @@ contract ValidatorPass is ERC721, AccessControl, IERC721Mintable {
         string memory _name,
         string memory _symbol,
         string memory _metadataUri,
-        address _admin
+        address _admin,
+        IReverseRegistrar _reverseRegistrar
     ) ERC721(_name, _symbol) {
         metadataUri = _metadataUri;
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _reverseRegistrar.claim(_admin);
     }
 
     function supportsInterface(

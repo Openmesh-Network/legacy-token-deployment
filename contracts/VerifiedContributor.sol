@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {ERC721Enumerable, ERC721} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IReverseRegistrar} from "@ensdomains/ens-contracts/contracts/reverseRegistrar/IReverseRegistrar.sol";
 
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -17,10 +18,12 @@ contract VerifiedContributor is ERC721Enumerable, AccessControl {
         string memory name_,
         string memory symbol_,
         string memory _metadataUri,
-        address _admin
+        address _admin,
+        IReverseRegistrar _reverseRegistrar
     ) ERC721(name_, symbol_) {
         metadataUri = _metadataUri;
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _reverseRegistrar.claim(_admin);
     }
 
     function supportsInterface(

@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "./scripts/multisig";
+import "./scripts/ens";
 
 import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
